@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدول المذاكرة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --chem-color: #e05555;
+    --chem-light: #fdf0f0;
+    --chem-mid: #f5c6c6;
+    --phys-color: #7c4dff;
+    --phys-light: #f3f0ff;
+    --phys-mid: #d4c7ff;
+    --math-color: #2e9e5b;
+    --math-light: #edf8f2;
+    --math-mid: #b8e8cc;
+    --bio-color: #d97706;
+    --bio-light: #fffbeb;
+    --bio-mid: #fde9a2;
+    --text: #1e1b2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f7f8fc;
+    --card: #ffffff;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .page-header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-label {
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .progress-track {
+    flex: 1;
+    min-width: 200px;
+    height: 12px;
+    background: #ede9fe;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c4dff, #2e9e5b, #e05555, #d97706);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-pct {
+    font-size: 1.4rem;
+    font-weight: 800;
+    min-width: 56px;
+    text-align: left;
+  }
+  .progress-counts {
+    color: var(--muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  /* ── Subject blocks ── */
+  .subject-block {
+    margin-bottom: 28px;
+  }
+
+  /* ── Table wrapper with diagonal label ── */
+  .table-outer {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  /* Diagonal subject label */
+  .subject-label-col {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    min-width: 40px;
+    padding: 12px 0;
+    color: #fff;
+    position: relative;
+    transform: rotate(180deg); /* text reads bottom-up in RTL = right side */
+    cursor: default;
+    user-select: none;
+  }
+  .subject-label-col span {
+    transform: rotate(0deg);
+  }
+
+  .table-inner {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    background: rgba(0,0,0,0.15);
+  }
+  tbody tr {
+    border-top: 1px solid rgba(0,0,0,0.06);
+    transition: background 0.15s;
+  }
+  tbody tr:hover {
+    background: rgba(0,0,0,0.02);
+  }
+  td {
+    padding: 10px 14px;
+    vertical-align: top;
+    font-size: 0.88rem;
+  }
+  .td-day {
+    font-weight: 700;
+    white-space: nowrap;
+    width: 80px;
+  }
+  .td-check {
+    width: 36px;
+    text-align: center;
+  }
+  .td-topics { }
+
+  /* Day badge */
+  .day-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(0,0,0,0.08);
+  }
+
+  /* Topics list */
+  .topic-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+  }
+  .topic-row label {
+    cursor: pointer;
+    font-size: 0.87rem;
+    line-height: 1.5;
+    flex: 1;
+    transition: opacity 0.2s, text-decoration 0.2s;
+  }
+  .topic-row label.done {
+    text-decoration: line-through;
+    opacity: 0.45;
+  }
+
+  /* Custom checkbox */
+  .cb-wrap {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .cb-wrap input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+  .cb-box {
+    position: absolute;
+    inset: 0;
+    border-radius: 5px;
+    border: 2px solid currentColor;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s, border-color 0.18s;
+    cursor: pointer;
+  }
+  .cb-box::after {
+    content: '';
+    width: 5px;
+    height: 9px;
+    border-right: 2.5px solid #fff;
+    border-bottom: 2.5px solid #fff;
+    transform: rotate(45deg) translate(-1px,-1px);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .cb-wrap input:checked ~ .cb-box {
+    background: currentColor;
+  }
+  .cb-wrap input:checked ~ .cb-box::after {
+    opacity: 1;
+  }
+
+  /* Per-subject colors */
+  .chem .subject-label-col  { background: var(--chem-color); }
+  .chem thead th             { background: var(--chem-color); }
+  .chem tbody tr:nth-child(odd) { background: var(--chem-light); }
+  .chem .day-badge           { background: var(--chem-mid); color: var(--chem-color); }
+  .chem .cb-wrap             { color: var(--chem-color); }
+
+  .phys .subject-label-col  { background: var(--phys-color); }
+  .phys thead th             { background: var(--phys-color); }
+  .phys tbody tr:nth-child(odd) { background: var(--phys-light); }
+  .phys .day-badge           { background: var(--phys-mid); color: var(--phys-color); }
+  .phys .cb-wrap             { color: var(--phys-color); }
+
+  .math .subject-label-col  { background: var(--math-color); }
+  .math thead th             { background: var(--math-color); }
+  .math tbody tr:nth-child(odd) { background: var(--math-light); }
+  .math .day-badge           { background: var(--math-mid); color: var(--math-color); }
+  .math .cb-wrap             { color: var(--math-color); }
+
+  .bio .subject-label-col   { background: var(--bio-color); }
+  .bio thead th              { background: var(--bio-color); }
+  .bio tbody tr:nth-child(odd) { background: var(--bio-light); }
+  .bio .day-badge            { background: var(--bio-mid); color: var(--bio-color); }
+  .bio .cb-wrap              { color: var(--bio-color); }
+
+  /* Subject header above table */
+  .subject-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .subject-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+  .subject-mini-progress {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-right: auto;
+  }
+  .subject-pct-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 99px;
+    color: #fff;
+  }
+  .chem-badge  { background: var(--chem-color); }
+  .phys-badge  { background: var(--phys-color); }
+  .math-badge  { background: var(--math-color); }
+  .bio-badge   { background: var(--bio-color); }
+
+  /* Reset button */
+  .reset-btn {
+    display: block;
+    margin: 28px auto 0;
+    padding: 9px 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    background: #fff;
+    color: var(--muted);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .reset-btn:hover { background: #fef2f2; color: #e05555; border-color: #f5c6c6; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>🗓 جدول المذاكرة</h1>
+  <p>٢٠ يوم · ٤ مواد</p>
+</div>
+
+<!-- Global progress -->
+<div class="progress-card">
+  <span class="progress-label">إجمالي الإنجاز</span>
+  <div class="progress-track">
+    <div class="progress-fill" id="globalFill"></div>
+  </div>
+  <span class="progress-pct" id="globalPct">0%</span>
+  <span class="progress-counts" id="globalCounts">0 / 0</span>
+</div>
+
+<div id="app"></div>
+
+<button class="reset-btn" onclick="resetAll()">🔄 إعادة تعيين كل شيء</button>
+
+<script>
+const subjects = [
+  {
+    id: 'chem',
+    name: 'الكيمياء 3',
+    cls: 'chem',
+    badgeCls: 'chem-badge',
+    days: [
+      { day: 'يوم 1', topics: ['مقدمة في علم الكيمياء', 'نظريات الذرة والجدول الدوري', 'قوى التجاذب والروابط'] },
+      { day: 'يوم 2', topics: ['الحساب الكيميائي', 'سرعة التفاعل والتوازن', 'المحاليل'] },
+      { day: 'يوم 3', topics: ['الأحماض والقواعد', 'الكيمياء الكهربائية'] },
+      { day: 'يوم 4', topics: ['الهيدروكربونات', 'مشتقات الهيدروكربونات'] },
+      { day: 'يوم 5', topics: ['المركبات العضوية الحيوية'] },
+    ]
+  },
+  {
+    id: 'phys',
+    name: 'الفيزياء 1',
+    cls: 'phys',
+    badgeCls: 'phys-badge',
+    days: [
+      { day: 'يوم 6',  topics: ['علم الفيزياء', 'الميكانيكا'] },
+      { day: 'يوم 7',  topics: ['الطاقة', 'حالات المادة'] },
+      { day: 'يوم 8',  topics: ['الموجات والصوت', 'الضوء'] },
+      { day: 'يوم 9',  topics: ['الكهرباء', 'الكهرومغناطيسية'] },
+      { day: 'يوم 10', topics: ['الفيزياء الحديثة', 'الفيزياء النووية'] },
+    ]
+  },
+  {
+    id: 'math',
+    name: 'الرياضيات 2',
+    cls: 'math',
+    badgeCls: 'math-badge',
+    days: [
+      { day: 'يوم 11', topics: ['المنطق الرياضي والهندسة', 'المثلثات والمضلعات', 'الأشكال الرباعية', 'الدائرة'] },
+      { day: 'يوم 12', topics: ['الدوال والمتباينات', 'كثيرات الحدود والمصفوفات', 'الدوال الكسرية والجذرية والنسبية'] },
+      { day: 'يوم 13', topics: ['المتتابعات والمتسلسلات', 'الاحتمالات والإحصاء', 'حساب المثلثات'] },
+      { day: 'يوم 14', topics: ['تحليل الدوال', 'الأسية واللوغاريتمية', 'القطوع المخروطية'] },
+      { day: 'يوم 15', topics: ['المتجهات', 'الإحداثيات القطبية', 'النهايات', 'الاشتقاق والتكامل'] },
+    ]
+  },
+  {
+    id: 'bio',
+    name: 'الأحياء 4',
+    cls: 'bio',
+    badgeCls: 'bio-badge',
+    days: [
+      { day: 'يوم 16', topics: ['مقدمة في علم الأحياء', 'التصنيف الحديث', 'الطلائعيات والفطريات'] },
+      { day: 'يوم 17', topics: ['المملكة الحيوانية (اللافقاريات)', 'المملكة الحيوانية (الفقاريات)'] },
+      { day: 'يوم 18', topics: ['أجهزة جسم الإنسان', 'المملكة النباتية'] },
+      { day: 'يوم 19', topics: ['الخلية', 'الوراثة', 'علم البيئة'] },
+      { day: 'يوم 20', topics: ['التنوع الحيوي وسلوك الحيوان'] },
+    ]
+  }
+];
+
+// Build unique key per topic
+function topicKey(subId, dayIdx, topicIdx) {
+  return `jdw_${subId}_d${dayIdx}_t${topicIdx}`;
+}
+
+function loadState() {
+  const state = {};
+  subjects.forEach(sub => {
+    sub.days.forEach((day, di) => {
+      day.topics.forEach((_, ti) => {
+        const k = topicKey(sub.id, di, ti);
+        state[k] = localStorage.getItem(k) === '1';
+      });
+    });
+  });
+  return state;
+}
+
+let state = loadState();
+
+function saveKey(k, val) {
+  state[k] = val;
+  localStorage.setItem(k, val ? '1' : '0');
+  updateAllProgress();
+}
+
+function countSubject(sub) {
+  let total = 0, done = 0;
+  sub.days.forEach((day, di) => {
+    day.topics.forEach((_, ti) => {
+      total++;
+      if (state[topicKey(sub.id, di, ti)]) done++;
+    });
+  });
+  return { total, done };
+}
+
+function countAll() {
+  let total = 0, done = 0;
+  subjects.forEach(sub => {
+    const c = countSubject(sub);
+    total += c.total; done += c.done;
+  });
+  return { total, done };
+}
+
+function updateAllProgress() {
+  const { total, done } = countAll();
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('globalFill').style.width = pct + '%';
+  document.getElementById('globalPct').textContent = pct + '%';
+  document.getElementById('globalCounts').textContent = `${done} / ${total} موضوع`;
+
+  subjects.forEach(sub => {
+    const c = countSubject(sub);
+    const sp = c.total ? Math.round(c.done / c.total * 100) : 0;
+    const badge = document.getElementById(`badge_${sub.id}`);
+    const mini  = document.getElementById(`mini_${sub.id}`);
+    if (badge) badge.textContent = sp + '%';
+    if (mini)  mini.textContent  = `${c.done}/${c.total}`;
+  });
+}
+
+function renderApp() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  subjects.forEach(sub => {
+    const block = document.createElement('div');
+    block.className = 'subject-block';
+
+    // Header
+    const hdr = document.createElement('div');
+    hdr.className = 'subject-header';
+    hdr.innerHTML = `
+      <span class="subject-title">${sub.name}</span>
+      <span class="subject-mini-progress" id="mini_${sub.id}">…</span>
+      <span class="subject-pct-badge ${sub.badgeCls}" id="badge_${sub.id}">0%</span>
+    `;
+    block.appendChild(hdr);
+
+    // Table outer (label + table)
+    const outer = document.createElement('div');
+    outer.className = `table-outer ${sub.cls}`;
+
+    // Diagonal label
+    const labelCol = document.createElement('div');
+    labelCol.className = 'subject-label-col';
+    labelCol.innerHTML = `<span>${sub.name}</span>`;
+    outer.appendChild(labelCol);
+
+    // Table
+    const inner = document.createElement('div');
+    inner.className = 'table-inner';
+    const table = document.createElement('table');
+    table.innerHTML = `<thead><tr>
+      <th style="width:36px"></th>
+      <th style="width:90px">اليوم</th>
+      <th>المواضيع</th>
+    </tr></thead>`;
+    const tbody = document.createElement('tbody');
+
+    sub.days.forEach((day, di) => {
+      const tr = document.createElement('tr');
+
+      // Day checkbox (checks/unchecks all topics in day)
+      const tdDayCheck = document.createElement('td');
+      tdDayCheck.className = 'td-check';
+      const allDone = day.topics.every((_, ti) => state[topicKey(sub.id, di, ti)]);
+      tdDayCheck.innerHTML = `
+        <div class="cb-wrap">
+          <input type="checkbox" id="day_${sub.id}_${di}" ${allDone ? 'checked' : ''}>
+          <label class="cb-box" for="day_${sub.id}_${di}"></label>
+        </div>`;
+      tr.appendChild(tdDayCheck);
+
+      // Day label
+      const tdDay = document.createElement('td');
+      tdDay.className = 'td-day';
+      tdDay.innerHTML = `<span class="day-badge">${day.day}</span>`;
+      tr.appendChild(tdDay);
+
+      // Topics
+      const tdTopics = document.createElement('td');
+      tdTopics.className = 'td-topics';
+      day.topics.forEach((topic, ti) => {
+        const k = topicKey(sub.id, di, ti);
+        const checked = state[k];
+        const row = document.createElement('div');
+        row.className = 'topic-row';
+        row.innerHTML = `
+          <div class="cb-wrap">
+            <input type="checkbox" id="${k}" ${checked ? 'checked' : ''}>
+            <label class="cb-box" for="${k}"></label>
+          </div>
+          <label for="${k}" class="${checked ? 'done' : ''}">${topic}</label>
+        `;
+        // Topic checkbox event
+        row.querySelector('input').addEventListener('change', function() {
+          saveKey(k, this.checked);
+          row.querySelector('label:last-child').classList.toggle('done', this.checked);
+          // Update day checkbox
+          const allNowDone = day.topics.every((_, tii) => state[topicKey(sub.id, di, tii)]);
+          document.getElementById(`day_${sub.id}_${di}`).checked = allNowDone;
+        });
+        tdTopics.appendChild(row);
+      });
+      tr.appendChild(tdTopics);
+
+      // Day checkbox event (toggle all topics)
+      setTimeout(() => {
+        const dayCb = document.getElementById(`day_${sub.id}_${di}`);
+        if (dayCb) {
+          dayCb.addEventListener('change', function() {
+            day.topics.forEach((_, ti) => {
+              const k = topicKey(sub.id, di, ti);
+              saveKey(k, this.checked);
+            });
+            // Re-render topics in this row
+            tdTopics.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = this.checked);
+            tdTopics.querySelectorAll('label:last-child, label.done').forEach(lbl => {
+              if (lbl.htmlFor !== undefined || lbl.className.includes('done') || !lbl.classList.contains('cb-box'))
+                lbl.classList.toggle('done', this.checked);
+            });
+          });
+        }
+      }, 0);
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    inner.appendChild(table);
+    outer.appendChild(inner);
+    block.appendChild(outer);
+    app.appendChild(block);
+  });
+
+  updateAllProgress();
+}
+
+function resetAll() {
+  if (!confirm('هل تريد إعادة تعيين كل التقدم؟')) return;
+  subjects.forEach(sub => {
+    sub.days.forEach((day, di) => {
+      day.topics.forEach((_, ti) => {
+        const k = topicKey(sub.id, di, ti);
+        localStorage.removeItem(k);
+      });
+    });
+  });
+  state = loadState();
+  renderApp();
+}
+
+renderApp();
+</script>
+</body>
+</html>
