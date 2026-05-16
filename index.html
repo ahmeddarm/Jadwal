@@ -317,6 +317,14 @@
     transition: background 0.15s, color 0.15s;
   }
   .reset-btn:hover { background: #fef2f2; color: #e05555; border-color: #f5c6c6; }
+  .day-date {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+  }
 </style>
 </head>
 <body>
@@ -341,6 +349,16 @@
 <button class="reset-btn" onclick="resetAll()">🔄 إعادة تعيين كل شيء</button>
 
 <script>
+function getDate(dayIndex) {
+  const dayNames = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const start = new Date(2026, 4, 16);
+  const d = new Date(start);
+  d.setDate(start.getDate() + dayIndex);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  return `${dayNames[d.getDay()]} ${dd}/${mm}`;
+}
+
 const subjects = [
   {
     id: 'chem',
@@ -348,11 +366,11 @@ const subjects = [
     cls: 'chem',
     badgeCls: 'chem-badge',
     days: [
-      { day: 'يوم 1', topics: ['مقدمة في علم الكيمياء', 'نظريات الذرة والجدول الدوري', 'قوى التجاذب والروابط'] },
-      { day: 'يوم 2', topics: ['الحساب الكيميائي', 'سرعة التفاعل والتوازن', 'المحاليل'] },
-      { day: 'يوم 3', topics: ['الأحماض والقواعد', 'الكيمياء الكهربائية'] },
-      { day: 'يوم 4', topics: ['الهيدروكربونات', 'مشتقات الهيدروكربونات'] },
-      { day: 'يوم 5', topics: ['المركبات العضوية الحيوية'] },
+      { day: 'يوم 1', date: getDate(0),  topics: ['مقدمة في علم الكيمياء', 'نظريات الذرة والجدول الدوري', 'قوى التجاذب والروابط'] },
+      { day: 'يوم 2', date: getDate(1),  topics: ['الحساب الكيميائي', 'سرعة التفاعل والتوازن', 'المحاليل'] },
+      { day: 'يوم 3', date: getDate(2),  topics: ['الأحماض والقواعد', 'الكيمياء الكهربائية'] },
+      { day: 'يوم 4', date: getDate(3),  topics: ['الهيدروكربونات', 'مشتقات الهيدروكربونات'] },
+      { day: 'يوم 5', date: getDate(4),  topics: ['المركبات العضوية الحيوية'] },
     ]
   },
   {
@@ -361,11 +379,11 @@ const subjects = [
     cls: 'phys',
     badgeCls: 'phys-badge',
     days: [
-      { day: 'يوم 6',  topics: ['علم الفيزياء', 'الميكانيكا'] },
-      { day: 'يوم 7',  topics: ['الطاقة', 'حالات المادة'] },
-      { day: 'يوم 8',  topics: ['الموجات والصوت', 'الضوء'] },
-      { day: 'يوم 9',  topics: ['الكهرباء', 'الكهرومغناطيسية'] },
-      { day: 'يوم 10', topics: ['الفيزياء الحديثة', 'الفيزياء النووية'] },
+      { day: 'يوم 6',  date: getDate(5),  topics: ['علم الفيزياء', 'الميكانيكا'] },
+      { day: 'يوم 7',  date: getDate(6),  topics: ['الطاقة', 'حالات المادة'] },
+      { day: 'يوم 8',  date: getDate(7),  topics: ['الموجات والصوت', 'الضوء'] },
+      { day: 'يوم 9',  date: getDate(8),  topics: ['الكهرباء', 'الكهرومغناطيسية'] },
+      { day: 'يوم 10', date: getDate(9),  topics: ['الفيزياء الحديثة', 'الفيزياء النووية'] },
     ]
   },
   {
@@ -374,11 +392,11 @@ const subjects = [
     cls: 'math',
     badgeCls: 'math-badge',
     days: [
-      { day: 'يوم 11', topics: ['المنطق الرياضي والهندسة', 'المثلثات والمضلعات', 'الأشكال الرباعية', 'الدائرة'] },
-      { day: 'يوم 12', topics: ['الدوال والمتباينات', 'كثيرات الحدود والمصفوفات', 'الدوال الكسرية والجذرية والنسبية'] },
-      { day: 'يوم 13', topics: ['المتتابعات والمتسلسلات', 'الاحتمالات والإحصاء', 'حساب المثلثات'] },
-      { day: 'يوم 14', topics: ['تحليل الدوال', 'الأسية واللوغاريتمية', 'القطوع المخروطية'] },
-      { day: 'يوم 15', topics: ['المتجهات', 'الإحداثيات القطبية', 'النهايات', 'الاشتقاق والتكامل'] },
+      { day: 'يوم 11', date: getDate(10), topics: ['المنطق الرياضي والهندسة', 'المثلثات والمضلعات', 'الأشكال الرباعية', 'الدائرة'] },
+      { day: 'يوم 12', date: getDate(11), topics: ['الدوال والمتباينات', 'كثيرات الحدود والمصفوفات', 'الدوال الكسرية والجذرية والنسبية'] },
+      { day: 'يوم 13', date: getDate(12), topics: ['المتتابعات والمتسلسلات', 'الاحتمالات والإحصاء', 'حساب المثلثات'] },
+      { day: 'يوم 14', date: getDate(13), topics: ['تحليل الدوال', 'الأسية واللوغاريتمية', 'القطوع المخروطية'] },
+      { day: 'يوم 15', date: getDate(14), topics: ['المتجهات', 'الإحداثيات القطبية', 'النهايات', 'الاشتقاق والتكامل'] },
     ]
   },
   {
@@ -387,11 +405,11 @@ const subjects = [
     cls: 'bio',
     badgeCls: 'bio-badge',
     days: [
-      { day: 'يوم 16', topics: ['مقدمة في علم الأحياء', 'التصنيف الحديث', 'الطلائعيات والفطريات'] },
-      { day: 'يوم 17', topics: ['المملكة الحيوانية (اللافقاريات)', 'المملكة الحيوانية (الفقاريات)'] },
-      { day: 'يوم 18', topics: ['أجهزة جسم الإنسان', 'المملكة النباتية'] },
-      { day: 'يوم 19', topics: ['الخلية', 'الوراثة', 'علم البيئة'] },
-      { day: 'يوم 20', topics: ['التنوع الحيوي وسلوك الحيوان'] },
+      { day: 'يوم 16', date: getDate(15), topics: ['مقدمة في علم الأحياء', 'التصنيف الحديث', 'الطلائعيات والفطريات'] },
+      { day: 'يوم 17', date: getDate(16), topics: ['المملكة الحيوانية (اللافقاريات)', 'المملكة الحيوانية (الفقاريات)'] },
+      { day: 'يوم 18', date: getDate(17), topics: ['أجهزة جسم الإنسان', 'المملكة النباتية'] },
+      { day: 'يوم 19', date: getDate(18), topics: ['الخلية', 'الوراثة', 'علم البيئة'] },
+      { day: 'يوم 20', date: getDate(19), topics: ['التنوع الحيوي وسلوك الحيوان'] },
     ]
   }
 ];
@@ -515,7 +533,7 @@ function renderApp() {
       // Day label
       const tdDay = document.createElement('td');
       tdDay.className = 'td-day';
-      tdDay.innerHTML = `<span class="day-badge">${day.day}</span>`;
+      tdDay.innerHTML = `<span class="day-badge">${day.day}</span><br><span class="day-date">${day.date || ''}</span>`;
       tr.appendChild(tdDay);
 
       // Topics
